@@ -1,8 +1,13 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sparkles, ArrowRight } from "lucide-react";
+import { useState } from "react";
+import Link from "next/link";
 
 export default function Hero() {
+  const [logoName, setLogoName] = useState("");
   return (
     <section className="py-24 md:py-32">
       <div className="container flex flex-col items-center text-center space-y-8">
@@ -23,11 +28,14 @@ export default function Hero() {
           <Input
             placeholder="Enter your logo name"
             className="h-12 text-base"
+            onChange={(e) => setLogoName(e?.target.value)}
           />
-          <Button size="lg" className="w-full sm:w-auto">
-            Get Started
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          <Link href={"/create?title=" + logoName}>
+            <Button size="lg" className="w-full sm:w-auto">
+              Get Started
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
         </div>
         <p className="text-sm text-muted-foreground">
           No credit card required • Free plan available
