@@ -32,16 +32,20 @@ export default function CreatePage() {
     logoStyle: "",
     plan: "",
   });
-
   useEffect(() => {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    if (savedData) {
-      const parsedData = JSON.parse(savedData);
-      setFormData(parsedData);
-      // Set the step to the last incomplete step
-      const lastStep =
-        Object.values(parsedData).findIndex((value) => !value) + 1;
-      setCurrentStep(lastStep || 1);
+    if (typeof window !== "undefined") {
+      const savedData = localStorage.getItem(STORAGE_KEY);
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        setFormData(parsedData);
+
+        // ✅ Only set step after data is properly loaded
+        const lastStep =
+          Object.values(parsedData).findIndex((value) => !value) + 1;
+        setCurrentStep(lastStep || 1);
+
+        console.log("Restored data:", parsedData);
+      }
     }
   }, []);
 
