@@ -1,3 +1,8 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useUser, SignInButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Check, Zap } from "lucide-react";
 import {
@@ -40,12 +45,23 @@ const plans = [
 ];
 
 export default function PricingPlan({ value, onChange, onBack }) {
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const { isSignedIn, isLoaded } = useUser();
+  const router = useRouter();
+
   const handleSubmit = (plan) => {
+    setSelectedPlan(plan);
+    if (!isLoaded) return; // Wait for user state to load
+
+    if (isSignedIn) {
+      proceedToGeneration(plan);
+    }
+  };
+
+  const proceedToGeneration = (plan) => {
     onChange(plan);
-    // Clear stored data after completing the form
     localStorage.removeItem("logogenie_form_data");
-    // Handle subscription or free generation
-    console.log("Selected plan:", plan);
+    router.push(`/generate-logo?type=${plan}`);
   };
 
   return (
@@ -94,16 +110,33 @@ export default function PricingPlan({ value, onChange, onBack }) {
               </ul>
             </CardContent>
             <CardFooter>
-              <Button
-                variant={plan.buttonVariant}
-                className="relative w-full"
-                onClick={() => handleSubmit(plan.name.toLowerCase())}
-              >
-                {plan.name === "Premium" && (
-                  <Zap className="mr-2 h-4 w-4 text-primary-foreground" />
-                )}
-                {plan.buttonText}
-              </Button>
+              {isSignedIn ? (
+                <Button
+                  variant={plan.buttonVariant}
+                  className="relative w-full"
+                  onClick={() => handleSubmit(plan.name.toLowerCase())}
+                >
+                  {plan.name === "Premium" && (
+                    <Zap className="mr-2 h-4 w-4 text-primary-foreground" />
+                  )}
+                  {plan.buttonText}
+                </Button>
+              ) : (
+                <SignInButton
+                  mode="modal"
+                  afterSignInUrl={`/generate-logo?type=${plan.name.toLowerCase()}`}
+                >
+                  <Button
+                    variant={plan.buttonVariant}
+                    className="relative w-full"
+                  >
+                    {plan.name === "Premium" && (
+                      <Zap className="mr-2 h-4 w-4 text-primary-foreground" />
+                    )}
+                    Sign in to {plan.buttonText}
+                  </Button>
+                </SignInButton>
+              )}
             </CardFooter>
           </Card>
         ))}

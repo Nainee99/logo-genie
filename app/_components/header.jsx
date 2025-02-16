@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 import ThemeToggle from "@/components/theme-toggle";
 import { useEffect } from "react";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { SignInButton } from "@clerk/nextjs";
 
 export default function Header() {
   useEffect(() => {
@@ -58,8 +60,18 @@ export default function Header() {
         </nav>
         <div className="flex items-center space-x-4">
           <ThemeToggle />
-          <Button variant="ghost">Sign In</Button>
-          <Button>Get Started</Button>
+          <SignedOut>
+            <SignInButton afterSignInUrl="/" afterSignUpUrl="/">
+              <Button variant="ghost">Sign In</Button>
+            </SignInButton>
+            <SignInButton afterSignInUrl="/" afterSignUpUrl="/">
+              <Button>Get Started</Button>
+            </SignInButton>
+          </SignedOut>
+          <SignedIn afterSignUpUrl="/" afterSignInUrl="/">
+            <Button>Dashboard</Button>
+            <UserButton />
+          </SignedIn>
         </div>
       </div>
     </header>
